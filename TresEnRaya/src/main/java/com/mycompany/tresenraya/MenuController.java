@@ -18,8 +18,9 @@ import javafx.stage.Stage;
  * @author Michael
  */
 public class MenuController implements Initializable {
+
     @FXML
-    Pane pane;
+    Pane Pane;
 
     /**
      * Initializes the controller class.
@@ -31,6 +32,8 @@ public class MenuController implements Initializable {
 
     @FXML
     public void jugar(ActionEvent event) {
+        Stage currentStage = (Stage) Pane.getScene().getWindow();
+        currentStage.close();
         Game gameUI = new Game();
         gameUI.start(new Stage()); // Esto lanzará la nueva ventana del juego
     }
