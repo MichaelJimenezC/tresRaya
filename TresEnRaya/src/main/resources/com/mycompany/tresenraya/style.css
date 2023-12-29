@@ -1,0 +1,6 @@
+.Pane{
+    -fx-background-image: url("../../../img/inicio.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 700 500;
+    -fx-background-position: center center;
+}

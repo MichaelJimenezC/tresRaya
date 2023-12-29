@@ -6,7 +6,11 @@ package com.mycompany.tresenraya;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -14,6 +18,8 @@ import javafx.fxml.Initializable;
  * @author Michael
  */
 public class MenuController implements Initializable {
+    @FXML
+    Pane pane;
 
     /**
      * Initializes the controller class.
@@ -21,6 +27,11 @@ public class MenuController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-    }    
-    
+    }
+
+    @FXML
+    public void jugar(ActionEvent event) {
+        Game gameUI = new Game();
+        gameUI.start(new Stage()); // Esto lanzará la nueva ventana del juego
+    }
 }
