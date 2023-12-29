@@ -4,11 +4,66 @@
  */
 package logica;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  *
  * @author Michael
  */
 public class Tree<E> {
+
+    private class TreeNode<E> {
+
+        private E content;
+        private List<Tree<E>> children;
+
+        public TreeNode(E content) {
+            this.content = content;
+            this.children = new LinkedList<>();
+        }
+
+        public E getContent() {
+            return content;
+        }
+
+        public void setContent(E content) {
+            this.content = content;
+        }
+
+        public List<Tree<E>> getChildren() {
+            return children;
+        }
+
+        public void setChildren(List<Tree<E>> children) {
+            this.children = children;
+        }
+
+        public void addChild(Tree<E> child) {
+            this.children.add(child);
+        }
+
+        public void addChildren(List<Tree<E>> children) {
+            this.children.addAll(children);
+        }
+
+        public Tree<E> getChild(int index) {
+            if (index < 0 || index >= children.size()) {
+                throw new IndexOutOfBoundsException("Índice fuera de rango.");
+            }
+            return children.get(index);
+        }
+
+        public int getNumberOfChildren() {
+            return children.size();
+        }
+
+        public boolean hasChildren() {
+            return !children.isEmpty();
+        }
+
+    }
 
     private TreeNode<E> root;
 
@@ -44,4 +99,16 @@ public class Tree<E> {
         return this.root.getChildren().isEmpty();
     }
 
+    public void addChild(E content) {
+        TreeNode<E> childNode = new TreeNode<>(content);
+        this.root.getChildren().add(new Tree<>(childNode.getContent()));
+    }
+    public List<E> getChildrenContent() {
+        List<E> childrenContent = new ArrayList<>();
+        for (Tree<E> child : this.root.getChildren()) {
+            childrenContent.add(child.getRoot());
+        }
+        return childrenContent;
+    }
+    
 }
