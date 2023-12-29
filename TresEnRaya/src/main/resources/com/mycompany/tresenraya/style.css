@@ -4,3 +4,10 @@
     -fx-background-size: 700 500;
     -fx-background-position: center center;
 }
+.Pane1{
+    -fx-background-image: url("../../../img/menu.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 700 500;
+    -fx-background-position: center center;
+}
+

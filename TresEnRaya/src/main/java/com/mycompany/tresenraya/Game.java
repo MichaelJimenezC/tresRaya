@@ -39,7 +39,7 @@ public class Game extends Application {
     private static final int DISTANCE = 100;
 
     private enum Mode {
-        Player, AI
+        Player, AI, AIvsAI
     }
     private Mode mode;
 
@@ -49,9 +49,16 @@ public class Game extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-
-        System.out.println("Game Mode: Player vs. AI");
-        mode = Mode.AI;
+        if (MenuModosController.modo.equals("AI")) {
+            System.out.println("Game Mode: Player vs. AI");
+            mode = Mode.AI;
+        }else if(MenuModosController.modo.equals("Player")){
+            System.out.println("Game Mode: Player vs. Player");
+            mode = Mode.Player;
+        }else if(MenuModosController.modo.equals("AIvsAI")){
+            System.out.println("Game Mode: IA vs. IA");
+            mode = Mode.AIvsAI;
+        }
 
         board = new Board();
         loadCells();

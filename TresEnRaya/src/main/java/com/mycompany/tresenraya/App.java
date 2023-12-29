@@ -21,6 +21,7 @@ import java.io.IOException;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.layout.Pane;
 
 public class App extends Application {
 
@@ -44,5 +45,9 @@ public class App extends Application {
 
     public static void main(String[] args) {
         launch();
+    }
+    public static void cerrar(Pane pane){
+        Stage currentStage = (Stage) pane.getScene().getWindow();
+        currentStage.close();
     }
 }

@@ -4,6 +4,7 @@
  */
 package com.mycompany.tresenraya;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -32,9 +33,11 @@ public class MenuController implements Initializable {
 
     @FXML
     public void jugar(ActionEvent event) {
-        Stage currentStage = (Stage) Pane.getScene().getWindow();
-        currentStage.close();
-        Game gameUI = new Game();
-        gameUI.start(new Stage()); // Esto lanzará la nueva ventana del juego
+        try {
+            App.setRoot("menuModos");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
     }
 }
