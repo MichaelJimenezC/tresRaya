@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import javafx.application.Platform;
 
 /**
  *
@@ -49,16 +50,7 @@ public class Game extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        if (MenuModosController.modo.equals("AI")) {
-            System.out.println("Game Mode: Player vs. AI");
-            mode = Mode.AI;
-        }else if(MenuModosController.modo.equals("Player")){
-            System.out.println("Game Mode: Player vs. Player");
-            mode = Mode.Player;
-        }else if(MenuModosController.modo.equals("AIvsAI")){
-            System.out.println("Game Mode: IA vs. IA");
-            mode = Mode.AIvsAI;
-        }
+        
 
         board = new Board();
         loadCells();
@@ -75,6 +67,51 @@ public class Game extends Application {
         primaryStage.setResizable(false);
         primaryStage.show();
 
+        draw();
+        determineMode();
+    }
+
+    private void determineMode() {
+        if (MenuModosController.modo.equals("AI")) {
+            mode = Mode.AI;
+        } else if (MenuModosController.modo.equals("Player")) {
+            mode = Mode.Player;
+        } else if (MenuModosController.modo.equals("AIvsAI")) {
+            mode = Mode.AIvsAI;
+            simulateAIvsAI();
+        }
+        canvas.setOnMouseClicked(this::handleMouseClick);
+    }
+
+    private void simulateAIvsAI() {
+    new Thread(() -> {
+        while (true) { // Bucle infinito para reiniciar el juego continuamente
+            while (!board.isGameOver()) {
+                playMoveAI();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            Platform.runLater(() -> {
+                draw();
+                paintWinner(canvas.getGraphicsContext2D());
+                board.reset(); // Resetea el tablero para una nueva partida
+                draw(); // Dibuja el tablero vacío
+            });
+            try {
+                Thread.sleep(2000); // Espera antes de iniciar una nueva partida
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }).start();
+}
+
+
+    private void playMoveAI() {
+        Algorithms.miniMax(board);
         draw();
     }
 
@@ -157,19 +194,19 @@ public class Game extends Application {
             board.reset();
             draw();
         } else {
-            playMove(event);
+            if (mode == Mode.Player || mode == Mode.AI) {
+                playMove(event);
+            }
         }
     }
 
     private void playMove(MouseEvent event) {
         int move = getMove(new javafx.geometry.Point2D(event.getX(), event.getY()));
-
-        if (!board.isGameOver() && move != -1) {
-            boolean validMove = board.move(move);
-            if (mode == Mode.AI && validMove && !board.isGameOver()) {
-                Algorithms.miniMax(board);
-            }
+        if (move != -1 && board.move(move)) {
             draw();
+            if (mode == Mode.AI) {
+                playMoveAI();
+            }
         }
     }
 
@@ -191,4 +228,5 @@ public class Game extends Application {
 
         return Math.sqrt(xDiffSquared + yDiffSquared);
     }
+
 }
