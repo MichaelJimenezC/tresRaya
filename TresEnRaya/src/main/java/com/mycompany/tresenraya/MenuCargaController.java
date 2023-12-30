@@ -10,18 +10,13 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
 
 /**
  * FXML Controller class
  *
  * @author Michael
  */
-public class MenuController implements Initializable {
-
-    @FXML
-    Pane Pane;
+public class MenuCargaController implements Initializable {
 
     /**
      * Initializes the controller class.
@@ -29,15 +24,14 @@ public class MenuController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-    }
-
+    }    
     @FXML
-    public void jugar(ActionEvent event) {
+    public void regresar(ActionEvent event) {
         try {
             App.setRoot("opciones");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
 
-    }
+    } 
 }

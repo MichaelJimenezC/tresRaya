@@ -21,7 +21,17 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 /**
  *
@@ -43,23 +53,31 @@ public class Game extends Application {
         Player, AI, AIvsAI
     }
     private Mode mode;
-
+    @FXML
+    private BorderPane root;
     public static void main(String[] args) {
         launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) {
-        
-
+        Button btnSave = new Button("Guardar Partida");
+        btnSave.setOnAction(event -> saveGame());
+        Button btnBack = new Button("Regresar");
+        btnBack.setOnAction(event -> regresar());
+        HBox botones = new HBox();
+        botones.getChildren().addAll(btnBack, btnSave);
+        botones.setAlignment(Pos.CENTER);
+        botones.setSpacing(20);
         board = new Board();
         loadCells();
         loadImages();
 
         canvas = new Canvas(WIDTH, HEIGHT);
         canvas.setOnMouseClicked(this::handleMouseClick);
-
-        BorderPane root = new BorderPane(canvas);
+        VBox layout = new VBox(10, botones, canvas); // Añadir el botón debajo del canvas
+        layout.setAlignment(Pos.CENTER);
+        root = new BorderPane(layout);
         root.setAlignment(canvas, Pos.CENTER);
 
         primaryStage.setTitle("Lazo's Tic Tac Toe");
@@ -69,6 +87,10 @@ public class Game extends Application {
 
         draw();
         determineMode();
+    }
+
+    private void regresar() {
+        App.cerrar(root);
     }
 
     private void determineMode() {
@@ -84,31 +106,30 @@ public class Game extends Application {
     }
 
     private void simulateAIvsAI() {
-    new Thread(() -> {
-        while (true) { // Bucle infinito para reiniciar el juego continuamente
-            while (!board.isGameOver()) {
-                playMoveAI();
+        new Thread(() -> {
+            while (true) { // Bucle infinito para reiniciar el juego continuamente
+                while (!board.isGameOver()) {
+                    playMoveAI();
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Platform.runLater(() -> {
+                    draw();
+                    paintWinner(canvas.getGraphicsContext2D());
+                    board.reset(); // Resetea el tablero para una nueva partida
+                    draw(); // Dibuja el tablero vacío
+                });
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(2000); // Espera antes de iniciar una nueva partida
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            Platform.runLater(() -> {
-                draw();
-                paintWinner(canvas.getGraphicsContext2D());
-                board.reset(); // Resetea el tablero para una nueva partida
-                draw(); // Dibuja el tablero vacío
-            });
-            try {
-                Thread.sleep(2000); // Espera antes de iniciar una nueva partida
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }).start();
-}
-
+        }).start();
+    }
 
     private void playMoveAI() {
         Algorithms.miniMax(board);
@@ -229,4 +250,28 @@ public class Game extends Application {
         return Math.sqrt(xDiffSquared + yDiffSquared);
     }
 
+    private void saveGame() {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        String timestamp = now.format(formatter);
+
+        String filename = "game_" + timestamp + ".dat";
+
+        try ( ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
+            oos.writeObject(board);
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Manejar error
+        }
+    }
+
+    private void loadGame(String filename) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
+            board = (Board) ois.readObject();
+            draw(); // Dibuja el estado del juego cargado
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            // Manejar error
+        }
+    }
 }

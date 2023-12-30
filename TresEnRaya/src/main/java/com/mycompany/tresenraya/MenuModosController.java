@@ -61,5 +61,14 @@ public class MenuModosController implements Initializable {
         iniciarJuego();
 
     }
+    @FXML
+    public void regresar(ActionEvent event) {
+        try {
+            App.setRoot("opciones");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+    } 
 
 }

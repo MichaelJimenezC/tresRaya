@@ -4,6 +4,7 @@
  */
 package com.mycompany.tresenraya;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -13,7 +14,7 @@ import javafx.scene.layout.GridPane;
  *
  * @author Michael
  */
-public class Board {
+public class Board implements Serializable {
 static final int BOARD_WIDTH = 3;
 
     public enum State {Blank, X, O}
