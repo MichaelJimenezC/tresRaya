@@ -61,14 +61,16 @@ public class MenuModosController implements Initializable {
         iniciarJuego();
 
     }
+
     @FXML
     public void regresar(ActionEvent event) {
         try {
+            System.out.println("Cambiando a pagina que dice nueva partida o cargar");
             App.setRoot("opciones");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
 
-    } 
+    }
 
 }

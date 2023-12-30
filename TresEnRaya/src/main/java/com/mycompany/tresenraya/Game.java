@@ -28,7 +28,9 @@ import java.io.ObjectOutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -55,6 +57,7 @@ public class Game extends Application {
     private Mode mode;
     @FXML
     private BorderPane root;
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -89,8 +92,19 @@ public class Game extends Application {
         determineMode();
     }
 
-    private void regresar() {
+    private void regresar( ) {
+        
         App.cerrar(root);
+        App app=new App();
+        try {
+            app.start(new Stage());
+            app.setRoot("menuModos");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        
+       
+
     }
 
     private void determineMode() {
@@ -266,7 +280,7 @@ public class Game extends Application {
     }
 
     private void loadGame(String filename) {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
+        try ( ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
             board = (Board) ois.readObject();
             draw(); // Dibuja el estado del juego cargado
         } catch (IOException | ClassNotFoundException e) {
@@ -274,4 +288,13 @@ public class Game extends Application {
             // Manejar error
         }
     }
+    @FXML
+    public void regresar(ActionEvent event) {
+        try {
+            App.setRoot("opciones");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+    } 
 }
