@@ -25,8 +25,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.Comparator;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -39,16 +42,16 @@ import javafx.scene.layout.VBox;
  *
  * @author Michael
  */
-public class Game extends Application {
+public class Game extends Application implements Serializable {
 
     private static final int WIDTH = 600;
     private static final int HEIGHT = 600;
 
     private Board board;
-    private Canvas canvas;
-    private Image imageBackground, imageX, imageO;
+    private transient Canvas canvas;
+    private transient Image imageBackground, imageX, imageO;
 
-    private javafx.geometry.Point2D[] cells;
+    private transient javafx.geometry.Point2D[] cells;
     private static final int DISTANCE = 100;
 
     private enum Mode {
@@ -56,7 +59,8 @@ public class Game extends Application {
     }
     private Mode mode;
     @FXML
-    private BorderPane root;
+    private transient BorderPane root;
+    
 
     public static void main(String[] args) {
         launch(args);
@@ -92,18 +96,16 @@ public class Game extends Application {
         determineMode();
     }
 
-    private void regresar( ) {
-        
+    private void regresar() {
+
         App.cerrar(root);
-        App app=new App();
+        App app = new App();
         try {
             app.start(new Stage());
             app.setRoot("menuModos");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        
-       
 
     }
 
@@ -265,29 +267,45 @@ public class Game extends Application {
     }
 
     private void saveGame() {
+        // Definimos la carpeta donde se guardarán los archivos
+        File saveDir = new File(System.getProperty("user.dir"));
+        // Obtenemos la lista de archivos de partidas guardadas
+        File[] saveFiles = saveDir.listFiles((dir, name) -> name.startsWith("game_") && name.endsWith(".dat"));
+
+        // Verificamos si el arreglo no es nulo y tiene más de 3 partidas (para mantener máximo 4)
+        if (saveFiles != null && saveFiles.length >= 4) {
+            // Ordenamos los archivos por fecha de modificación para eliminar el más antiguo
+            Arrays.sort(saveFiles, Comparator.comparingLong(File::lastModified));
+            // Eliminamos la partida más antigua
+            saveFiles[0].delete(); // Elimina el archivo más antiguo
+        }
+
+        // Guardamos la nueva partida
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         String timestamp = now.format(formatter);
-
-        String filename = "game_" + timestamp + ".dat";
+        String filename = "game_" + timestamp +"_"+this.mode+ ".dat";
 
         try ( ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
-            oos.writeObject(board);
+            oos.writeObject(board); // Asumiendo que 'board' es el objeto que deseas guardar
         } catch (IOException e) {
             e.printStackTrace();
-            // Manejar error
+            // Manejar el error adecuadamente
         }
     }
 
-    private void loadGame(String filename) {
+    public void loadGame(String filename) {
         try ( ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
-            board = (Board) ois.readObject();
+            Game game = (Game) ois.readObject();
+            board = game.board;
+            mode = game.mode;
             draw(); // Dibuja el estado del juego cargado
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             // Manejar error
         }
     }
+
     @FXML
     public void regresar(ActionEvent event) {
         try {
@@ -296,5 +314,6 @@ public class Game extends Application {
             ex.printStackTrace();
         }
 
-    } 
+    }
+    
 }
