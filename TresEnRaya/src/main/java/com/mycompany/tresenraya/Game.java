@@ -30,11 +30,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Optional;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -60,7 +62,6 @@ public class Game extends Application implements Serializable {
     private Mode mode;
     @FXML
     private transient BorderPane root;
-    
 
     public static void main(String[] args) {
         launch(args);
@@ -97,16 +98,30 @@ public class Game extends Application implements Serializable {
     }
 
     private void regresar() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Salir al menu");
+        alert.setContentText("¿Deseas salir del juego?");
+        // Crear botones para las opciones
+        ButtonType buttonTypeOne = new ButtonType("Salir");
+        ButtonType buttonTypeTwo = new ButtonType("Cancelar");
+        // Añadir botones al Alert
+        alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo);
 
-        App.cerrar(root);
-        App app = new App();
-        try {
-            app.start(new Stage());
-            app.setRoot("menuModos");
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        // Mostrar el Alert y esperar por la respuesta del usuario
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == buttonTypeOne) {
+            App.cerrar(root);
+            App app = new App();
+            try {
+                app.start(new Stage());
+                app.setRoot("menuModos");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
+        } else {
+
         }
-
     }
 
     private void determineMode() {
@@ -284,13 +299,39 @@ public class Game extends Application implements Serializable {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         String timestamp = now.format(formatter);
-        String filename = "game_" + timestamp +"_"+this.mode+ ".dat";
+        String filename = "game_" + timestamp + "_" + this.mode + ".dat";
 
         try ( ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
             oos.writeObject(board); // Asumiendo que 'board' es el objeto que deseas guardar
         } catch (IOException e) {
             e.printStackTrace();
             // Manejar el error adecuadamente
+        }
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Partida Guardada");
+        alert.setHeaderText("La partida se ha guardado con éxito.");
+        alert.setContentText("¿Deseas salir o seguir jugando?");
+        // Crear botones para las opciones
+        ButtonType buttonTypeOne = new ButtonType("Salir");
+        ButtonType buttonTypeTwo = new ButtonType("Seguir Jugando");
+        // Añadir botones al Alert
+        alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo);
+
+        // Mostrar el Alert y esperar por la respuesta del usuario
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == buttonTypeOne) {
+            App.cerrar(root);
+            App app = new App();
+
+            try {
+                app.start(new Stage());
+                app.setRoot("opciones");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            // El usuario elige seguir jugando
+            // Aquí no es necesario hacer nada, el juego continúa
         }
     }
 
@@ -305,15 +346,4 @@ public class Game extends Application implements Serializable {
             // Manejar error
         }
     }
-
-    @FXML
-    public void regresar(ActionEvent event) {
-        try {
-            App.setRoot("opciones");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-    }
-    
 }
