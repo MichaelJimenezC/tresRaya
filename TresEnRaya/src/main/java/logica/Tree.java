@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class Tree<E> {
 
-    private class TreeNode<E> {
+    public class TreeNode<E> {
 
         private E content;
         private List<Tree<E>> children;
@@ -83,7 +83,7 @@ public class Tree<E> {
         return root.getContent();
     }
 
-    private TreeNode<E> getRootNode() {
+    public TreeNode<E> getRootNode() {
         return this.root;
     }
 
@@ -103,6 +103,7 @@ public class Tree<E> {
         TreeNode<E> childNode = new TreeNode<>(content);
         this.root.getChildren().add(new Tree<>(childNode.getContent()));
     }
+
     public List<E> getChildrenContent() {
         List<E> childrenContent = new ArrayList<>();
         for (Tree<E> child : this.root.getChildren()) {
@@ -110,5 +111,4 @@ public class Tree<E> {
         }
         return childrenContent;
     }
-    
 }
