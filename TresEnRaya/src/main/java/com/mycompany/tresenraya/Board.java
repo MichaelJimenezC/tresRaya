@@ -243,27 +243,29 @@ static final int BOARD_WIDTH = 3;
         return board;
     }
 
-    @Override
-    public String toString () {
-        StringBuilder sb = new StringBuilder();
-
-        for (int y = 0; y < BOARD_WIDTH; y++) {
-            for (int x = 0; x < BOARD_WIDTH; x++) {
-
-                if (board[y][x] == State.Blank) {
-                    sb.append("-");
-                } else {
-                    sb.append(board[y][x].name());
-                }
-                sb.append(" ");
-
-            }
-            if (y != BOARD_WIDTH -1) {
-                sb.append("\n");
-            }
+@Override
+public String toString() {
+    StringBuilder result = new StringBuilder();
+    for (int row = 0; row < BOARD_WIDTH; row++) {
+        for (int col = 0; col < BOARD_WIDTH; col++) {
+            State state = board[row][col];
+            result.append(stateToString(state)).append(" ");
         }
-
-        return new String(sb);
+        result.append("\n");
     }
+    return result.toString();
+}
 
+private String stateToString(State state) {
+    switch (state) {
+        case X:
+            return "X";
+        case O:
+            return "O";
+        case Blank:
+            return " ";
+        default:
+            return " ";
+    }
+}
 }
