@@ -2,7 +2,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-//Test 
 package com.mycompany.tresenraya;
 
 import javafx.application.Application;
@@ -40,6 +39,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import logica.Tree;
 
 /**
  *
@@ -89,7 +89,7 @@ public class Game extends Application implements Serializable {
         root = new BorderPane(layout);
         root.setAlignment(canvas, Pos.CENTER);
 
-        primaryStage.setTitle("Lazo's Tic Tac Toe");
+        primaryStage.setTitle("TRES EN RAYA");
         primaryStage.setScene(new Scene(root, WIDTH, HEIGHT));
         primaryStage.setResizable(false);
         primaryStage.show();
@@ -227,7 +227,7 @@ public class Game extends Application implements Serializable {
 
     private void paintWinner(GraphicsContext gc) {
         if (board.isGameOver()) {
-            gc.setFill(Color.WHITE);
+            gc.setFill(Color.BLACK);
             gc.setFont(new Font("TimesRoman", 50));
 
             String s;
