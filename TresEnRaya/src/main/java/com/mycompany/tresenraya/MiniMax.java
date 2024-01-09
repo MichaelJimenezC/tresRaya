@@ -16,22 +16,22 @@ public class MiniMax {
 
         MiniMax.maxPly = maxPly;
         Tree<Board> tree = new Tree<>(board.getDeepCopy());
-        miniMax(tree, player, board, 0);
+        miniMax(tree.getRootNode(), player, board, 0);
     }
 
-    private static int miniMax(Tree<Board> tree, State player, Board board, int currentPly) {
+    private static int miniMax(Tree<Board>.TreeNode<Board> node, State player, Board board, int currentPly) {
         if (currentPly++ == maxPly || board.isGameOver()) {
             return score(player, board);
         }
 
         if (board.getTurn() == player) {
-            return getMax(tree, player, board, currentPly);
+            return getMax(node, player, board, currentPly);
         } else {
-            return getMin(tree, player, board, currentPly);
+            return getMin(node, player, board, currentPly);
         }
     }
 
-    private static int getMax(Tree<Board> tree, State player, Board board, int currentPly) {
+    private static int getMax(Tree<Board>.TreeNode<Board> node, State player, Board board, int currentPly) {
         double bestScore = Double.NEGATIVE_INFINITY;
         int indexOfBestMove = -1;
 
@@ -39,9 +39,10 @@ public class MiniMax {
             Board modifiedBoard = board.getDeepCopy();
             modifiedBoard.move(theMove);
             Tree<Board> childTree = new Tree<>(modifiedBoard);
-            tree.addChild(modifiedBoard);
+            node.addChild(new Tree<>(childTree.getRootNode().getContent()));
 
-            int score = miniMax(childTree, player, modifiedBoard, currentPly);
+            int score = miniMax(node.getChild(node.getNumberOfChildren() - 1).getRootNode(), player, modifiedBoard, currentPly);
+
             if (score > bestScore) {
                 bestScore = score;
                 indexOfBestMove = theMove;
@@ -50,11 +51,13 @@ public class MiniMax {
 
         if (indexOfBestMove != -1) {
             board.move(indexOfBestMove);
+            System.out.println("Current Tree:");
+            System.out.println(node.toString()); // Imprimir el árbol después de cada jugada
         }
         return (int) bestScore;
     }
 
-    private static int getMin(Tree<Board> tree, State player, Board board, int currentPly) {
+    private static int getMin(Tree<Board>.TreeNode<Board> node, State player, Board board, int currentPly) {
         double bestScore = Double.POSITIVE_INFINITY;
         int indexOfBestMove = -1;
 
@@ -62,9 +65,10 @@ public class MiniMax {
             Board modifiedBoard = board.getDeepCopy();
             modifiedBoard.move(theMove);
             Tree<Board> childTree = new Tree<>(modifiedBoard);
-            tree.addChild(modifiedBoard);
+            node.addChild(new Tree<>(childTree.getRootNode().getContent()));
 
-            int score = miniMax(childTree, player, modifiedBoard, currentPly);
+            int score = miniMax(node.getChild(node.getNumberOfChildren() - 1).getRootNode(), player, modifiedBoard, currentPly);
+
             if (score < bestScore) {
                 bestScore = score;
                 indexOfBestMove = theMove;
@@ -73,6 +77,8 @@ public class MiniMax {
 
         if (indexOfBestMove != -1) {
             board.move(indexOfBestMove);
+            System.out.println("Current Tree:");
+            System.out.println(node.toString()); // Imprimir el árbol después de cada jugada
         }
         return (int) bestScore;
     }
